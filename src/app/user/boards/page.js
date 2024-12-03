@@ -108,6 +108,7 @@ const Boards = () => {
           console.error("Error fetching workspaces:", error);
         }
       };
+     
         const handleCreateBoard = () => {
     setShowBoardModal(true);
   };
@@ -225,9 +226,14 @@ const Boards = () => {
       };
       const addBoardToWorkspace = (index) => {
         const updatedWorkspaces = [...workspaces].map(workspace => ({ ...workspace, boards: workspace.boards || [] }));
-            updatedWorkspaces[index].boards.push(`Board ${updatedWorkspaces[index].boards.length + 1}`);
+        updatedWorkspaces[index].boards.push({
+          title: boardTitle,
+          background: background,
+          visibility: visibility
+        })
             setWorkspaces(updatedWorkspaces);
           };
+          console.log(workspaces.boards)
     return (
         <div  style={{  backgroundColor: "#1A202C", }}>
         <div>
