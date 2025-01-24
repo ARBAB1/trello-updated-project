@@ -1,118 +1,100 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
 
-const Header=()=> {
+const Header = ({ onToggleSidebar }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    onToggleSidebar(!isMobileMenuOpen); // Notify parent to toggle sidebar
+  };
+
   return (
     <header className="bg-gray-900 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Left Section: Logo and NavLinks */}
-        <div className="flex items-center space-x-6">
+        {/* Left Section: Logo and Hamburger Icon */}
+        <div className="flex items-center space-x-4">
+          {/* Hamburger Icon */}
+          <button
+            className="md:hidden text-gray-400 hover:text-white"
+            onClick={toggleMobileMenu}
+          >
+            <svg
+              className="w-6 h-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+          {/* Logo */}
           <Image
-            src="/trello.png" // Replace with the actual path of your logo
+            src="/trello.png"
             alt="Trello Logo"
             width={32}
             height={32}
           />
-          <nav className="flex items-center space-x-4">
-            <div className="group relative">
-              <button className="hover:text-gray-300">Workspaces</button>
-              {/* Dropdown Menu for Workspaces */}
-              <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white text-gray-700 shadow-lg">
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                  Workspace 1
-                </a>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                  Workspace 2
-                </a>
-              </div>
-            </div>
-            <div className="group relative">
-              <button className="hover:text-gray-300">Recent</button>
-              {/* Dropdown Menu for Recent */}
-              <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white text-gray-700 shadow-lg">
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                  Recent 1
-                </a>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                  Recent 2
-                </a>
-              </div>
-            </div>
-            <div className="group relative">
-              <button className="hover:text-gray-300">Starred</button>
-            </div>
-            <div className="group relative">
-              <button className="hover:text-gray-300">Templates</button>
-            </div>
-            <button className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
-              Create
-            </button>
-          </nav>
+            {/* Right Section: Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-4">
+          <button className="hover:text-gray-300">Workspaces</button>
+          <button className="hover:text-gray-300">Recent</button>
+          <button className="hover:text-gray-300">Starred</button>
+          <button className="hover:text-gray-300">Templates</button>
+         
+        </nav>
         </div>
 
-        {/* Right Section: Search and Account */}
-        <div className="flex items-center space-x-6">
-          {/* Search Bar */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-gray-800 text-white px-4 py-1 rounded-lg focus:outline-none"
-            />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2">
-              <svg
-                className="w-4 h-4 text-gray-400"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <path d="M10 2a8 8 0 016.32 12.906l4.384 4.384a1 1 0 01-1.414 1.414l-4.384-4.384A8 8 0 1110 2zm0 2a6 6 0 100 12 6 6 0 000-12z" />
-              </svg>
-            </button>
-          </div>
+      
 
-          {/* Icons and User Account */}
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-400 hover:text-white">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0a7.003 7.003 0 0013.415 4.906c.911.911.911 2.501 0 3.414l-4.707 4.707c-.39.39-1.024.39-1.414 0l-5.293-5.293a1 1 0 00-1.414 0l-5.293 5.293a1 1 0 01-1.414 0l-4.707-4.707c-.911-.911-.911-2.501 0-3.414A7.003 7.003 0 0011.049 2.927z"
-                />
-              </svg>
-            </button>
-            <button className="text-gray-400 hover:text-white">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-            </button>
-            <div className="relative">
-              <button className="bg-gray-700 w-8 h-8 rounded-full text-white flex items-center justify-center">
-                GA
-              </button>
-            </div>
-          </div>
+        {/* Right Section: Search and Account (Hidden on small screens) */}
+        <div className="hidden md:flex items-center space-x-4">
+          <input
+            type="text"
+            placeholder="Search"
+            className="bg-gray-800 text-white px-4 py-1 rounded-lg focus:outline-none"
+          />
+          <button className="text-gray-400 hover:text-white">
+            <svg
+              className="w-6 h-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </button>
+          <button className="bg-gray-700 w-8 h-8 rounded-full text-white flex items-center justify-center">
+            GA
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu (Visible only on small screens) */}
+      {isMobileMenuOpen && (
+        <nav className="md:hidden bg-gray-800 mt-2 p-4 space-y-2 rounded-lg">
+          <button className="block text-gray-300 hover:text-white">Workspaces</button>
+          <button className="block text-gray-300 hover:text-white">Recent</button>
+          <button className="block text-gray-300 hover:text-white">Starred</button>
+          <button className="block text-gray-300 hover:text-white">Templates</button>
+      
+        </nav>
+      )}
     </header>
   );
-}
-export default Header
+};
+
+export default Header;
