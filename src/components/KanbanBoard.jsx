@@ -82,50 +82,32 @@ const getHeaders = async () => {
   };
 
   return (
-//     <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden">
 
-//       <div className="mx-auto">
-//       <button
-//         onClick={() => createList()}
-//         className="h-[60px]
-// w-[350px]
-// min-w-[350px]
-// cursor-pointer rounded-1g @bg-mainBackgroundColor border-2
-// •border-columnBackgroundColor p-4
-// Dring-rose-500
-// hover: ring-2"
-//       >
-//         + Add a List
-//       </button>
-//       </div>
-  
-//     </div>
-//   )
     <DndContext collisionDetection={closestCorners} onDragEnd={onDragEnd}>
       <div className="flex gap-4 overflow-x-auto p-4">
         <SortableContext items={columns.map((col) => col.list_id || col.list_nam)}>
           {/* {console.log(columns.length,"columns")} */}
           {columns.length > 0 && 
  columns.map((column, index) => (
-  <Column key={column.list_id || `column-${index}`} column={column} />
+  <Column key={column.list_id || `column-${index}`} column={column} getBoardData={getBoardData}/>
 ))}
           
            
          
-            <div className="bg-gray-200 p-4 rounded w-80 text-center">
-              <button
+            <div className="bg-gray-900 p-4 rounded w-80 h-20 text-center">
+              <div
                 onClick={() => setIsAddingList(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                className="text-white px-4 py-2 rounded-lg border border-gray-600 cursor-pointer"
               >
                 + Add a List
-              </button>
+              </div>
             </div>
         
         </SortableContext>
 
         {/* Add List Input Field */}
         {isAddingList && (
-          <div className="bg-gray-200 p-4 rounded w-80">
+          <div className="bg-gray-700 p-4 h-35 rounded w-80">
             <input
               type="text"
               className="border p-2 w-full text-black"
@@ -157,3 +139,13 @@ const getHeaders = async () => {
 };
 
 export default KanbanBoard;
+
+
+
+// ‹div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden px-[40px]">
+// ‹div className="m-auto">
+// <button className="h- [60px] W- [350px] min-w-[350px] cursor-pointer rounded-1g bg-black border-2 border-columnBackgroundColor p-4ring-rose-500
+// hover: ring-2
+// Add Column </button>
+// </div>
+// </div>

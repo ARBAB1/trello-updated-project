@@ -59,11 +59,12 @@ export const createList = async (boardId, listName, listColor) => {
 
 // Delete a List (Column)
 export const deleteList = async (listId) => {
-  await fetch(`${baseUrl}/lists/delete-list`, {
+  const response = await fetch(`${baseUrl}/lists/delete-list`, {
     method: "POST",
     headers: await getHeaders(),
     body: JSON.stringify({ list_id: listId }),
   });
+  return response.json();
 };
 
 /** =========================== CARD APIs =========================== */
@@ -80,11 +81,13 @@ export const fetchCardsByListId = async (listId) => {
 
 // Fetch Card Details
 export const fetchCardDetails = async (cardId) => {
+  // console.log(cardId)
   const response = await fetch(`${baseUrl}/cards/get-card-details-by-card-id/${cardId}`, {
     method: "GET",
     headers: await getHeaders(),
   });
   const data = await response.json();
+  //console.log(data)
   return data.success ? data.data : null;
 };
 
@@ -107,14 +110,24 @@ export const updateCard = async (formData) => {
   });
   return response.json();
 };
-
+export const updateDescription = async (formData) => {
+  const response = await fetch(`${baseUrl}/cards/update-card`, {
+    method: "POST",
+    headers: await getHeaders(),
+    body: formData,
+  });
+  const data = await response.json();
+  console.log(data)
+  return response.json();
+};
 // Delete a Card
 export const deleteCard = async (cardId) => {
-  await fetch(`${baseUrl}/cards/delete-card`, {
+  const response = await fetch(`${baseUrl}/cards/delete-card`, {
     method: "POST",
     headers: await getHeaders(),
     body: JSON.stringify({ card_id: cardId }),
   });
+return response.json();
 };
 
 /** =========================== CARD MEMBERS APIs =========================== */
@@ -199,3 +212,26 @@ export const deleteComment = async (commentId) => {
     body: JSON.stringify({ comment_id: commentId }),
   });
 };
+export const getCardActivity = async (cardId) => {
+  const response = await fetch(`${baseUrl}/cards/get-card-activity-by-card-id/${cardId}`, {
+    method: "GET",
+    headers: await getHeaders(),
+  });
+  const data = await response.json();
+// console.log(data,"data")
+  return data.success ? data.data.activities : [];
+};
+
+export const fetchWorkspaceMembers = async (workspaceId) => {
+     const response = await fetch(
+          `${baseUrl}/workspace/get-workspace-members-by-workspace-id/${workspaceId}`,
+          {
+            method: "GET",
+            headers: await getHeaders(),
+            body: JSON.stringify({ workspace_id: workspaceId }),
+          }
+       
+        );
+        const data = await response.json();
+        return data.success ? data.data : [];
+}
