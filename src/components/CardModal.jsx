@@ -8,7 +8,7 @@ const CardModal = ({ card, closeModal }) => {
   const [activity, setActivity] = useState([]);
   const [description, setDescription] = useState("");
 // console.log(card)
-console.log(card,"card123")
+// console.log(card,"card123")
 const [showMembersModal, setShowMembersModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [members, setMembers] = useState([
@@ -22,11 +22,11 @@ useEffect(() => {
   
   const fetchDetails = async () => {
      //  console.log(card.card_id,"card_id")
-      const cardDetails = await fetchCardDetails(card.card_id);
+      const cardDetails = await fetchCardDetails(card.card_id)
        console.log(cardDetails,"cardDetails")
      
       setDetails(cardDetails);
-
+// const boardMembers = await fetch
        const cardComments = await getCardComments(card.card_id);
        setComments(cardComments);
        const CardActivity = await getCardActivity(card.card_id);

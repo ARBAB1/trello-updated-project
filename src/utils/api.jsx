@@ -235,3 +235,17 @@ export const fetchWorkspaceMembers = async (workspaceId) => {
         const data = await response.json();
         return data.success ? data.data : [];
 }
+// const fetchBoardMembers = async (board_id) => {
+
+
+//     const response = await fetch(
+//       `${baseUrl}/boards/get-board-members-by-board-id/${board_id}`,
+//       {
+//         method: "GET",
+//         headers: await getHeaders(),
+//       }
+//     );
+
+//     const data = await response.json();
+//     return data.success ? data.data : [];
+// };
