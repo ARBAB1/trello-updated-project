@@ -3,47 +3,45 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Correct import for routing in Next.js
 import Link from "next/link";
-import { baseUrl } from "@/constant";
 
 export default function Home() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const [name, setName] = useState("");
   // Function to handle login submission
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent form refresh
-
+  console.log(name,email,password)
     try {
-      const response = await fetch(`${baseUrl}/users/login-user`, {
+        const formData = new FormData();
+        formData.append("name", `${name}` || name);
+        formData.append("email", email);
+        formData.append("password", password);
+    
+      const response = await fetch(`${baseUrl}/users/signUp-user`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': "TrelloAPIkeyVeryHardItIs",
+            // 'Content-Type': 'application/json',
+            'x-api-key': "TrelloAPIkeyVeryHardItIs",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: formData, // Pass FormData as the body
       });
-
+  
       const data = await response.json();
-
+  console.log(data)
       if (response.ok) {
-        // Save the access_token to local storage or state management
-        localStorage.setItem("access_token", data.data.access_token);
-        localStorage.setItem("refresh_token", data.data.refresh_token);
-        localStorage.setItem("user_id", data.data.id);
-        localStorage.setItem("user_name", data.data.name);
-        router.push("/user/boards"); // Redirect to HomeScreen
+      
+        router.push("/"); // Redirect to HomeScreen
       } else {
-        setError(data.message || "Login failed");
+        console.log(data.message || "Login failed");
       }
     } catch (error) {
-      setError("An error occurred. Please try again later.");
+      console.log("An error occurred. Please try again later.");
     }
   };
+  
 
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-900 relative">
@@ -86,6 +84,13 @@ export default function Home() {
         <form onSubmit={handleLogin} className="space-y-4">
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
             type="email"
             placeholder="Email"
             value={email}
@@ -110,7 +115,7 @@ export default function Home() {
         <div className="text-center mt-4 text-sm">
           <span
             className="text-blue-500 hover:underline cursor-pointer"
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push("/signUp")}
           >
             Create an account
           </span>
