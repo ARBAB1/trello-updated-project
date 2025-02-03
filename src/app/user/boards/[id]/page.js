@@ -297,6 +297,7 @@ const fetchBoardMembers = async (board_id) => {
   return (
     <div
       style={{
+        color: "white",
         backgroundImage: `url(${baseUrl}/${board?.background_image_url})`,
         backgroundSize: "cover",
         backgroundPosition: "center",

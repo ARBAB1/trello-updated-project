@@ -460,7 +460,7 @@ console.log(data)
     }
   };
   return (
-    <div style={{ backgroundColor: "#1A202C" }}>
+    <div style={{ backgroundColor: "#1A202C",color:"#fff" }} className="p-6">
       {/* Main content */}
       <div>
         <h1 className="text-2xl mb-6">Most popular templates</h1>
@@ -505,7 +505,7 @@ console.log(data)
               <div key={index} className="bg-gray-700 p-6 rounded-lg">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
-                    <span className="bg-green-500 p-2 rounded-lg text-black font-bold">
+                    <span className="bg-green-500 p-2 rounded-lg text-white font-bold">
                       {workspace.workspace_name.charAt(0).toUpperCase()}
                     </span>
                     <span>{workspace.workspace_name}</span>
@@ -597,7 +597,7 @@ console.log(data)
       {showBoardModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
           <div className="bg-gray-800 text-white rounded-lg p-6 w-96">
-            <h2 className="text-xl font-bold mb-4">Create Board</h2>
+            <h2 className="text-xl font-bold mb-4 ">Create Board</h2>
             <div className="mb-4">
               <label className="block text-gray-300">Board Title</label>
               <input

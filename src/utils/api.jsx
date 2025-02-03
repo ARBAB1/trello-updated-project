@@ -111,9 +111,13 @@ export const updateCard = async (formData) => {
   return response.json();
 };
 export const updateDescription = async (formData) => {
+  const token = await localStorage.getItem("access_token");
   const response = await fetch(`${baseUrl}/cards/update-card`, {
     method: "POST",
-    headers: await getHeaders(),
+    headers: {
+      "x-api-key": token1,
+    accesstoken: `Bearer ${token}`,
+    },
     body: formData,
   });
   const data = await response.json();

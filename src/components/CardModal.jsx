@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { fetchCardDetails, assignMembers, removeMember, addLabel, removeLabel, addAttachment, removeAttachment, getCardComments, deleteComment, getCardActivity, updateDescription } from "@/utils/api";
+import { fetchCardDetails, assignMembers, removeMember, addLabel, removeLabel, addAttachment, removeAttachment, getCardComments, deleteComment, getCardActivity, updateDescription, fetchBoardMembers } from "@/utils/api";
 import { baseUrl } from "@/constant";
+import { Activity } from "lucide-react";
+import ActivityList from "./Activity";
 
 const CardModal = ({ card, closeModal }) => {
   const [details, setDetails] = useState(null);
   const [comments, setComments] = useState([]);
   const [activity, setActivity] = useState([]);
   const [description, setDescription] = useState("");
+  const [boardMembers, setBoardMembers] = useState([]);
 // console.log(card)
 // console.log(card,"card123")
 const [showMembersModal, setShowMembersModal] = useState(false);
@@ -23,8 +26,10 @@ useEffect(() => {
   const fetchDetails = async () => {
      //  console.log(card.card_id,"card_id")
       const cardDetails = await fetchCardDetails(card.card_id)
-       console.log(cardDetails,"cardDetails")
-     
+      //  console.log(cardDetails,"cardDetails")
+  
+
+     setDescription(cardDetails.card.description);
       setDetails(cardDetails);
 // const boardMembers = await fetch
        const cardComments = await getCardComments(card.card_id);
@@ -80,7 +85,7 @@ useEffect(() => {
           {/* Description */}
           <h3 className="text-lg font-semibold mt-4">Description</h3>
           <textarea
-            value={description}
+            value={ description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full bg-gray-800 p-2 rounded mt-2 text-white"
             placeholder="Need formatting help? Type /help."
@@ -88,7 +93,7 @@ useEffect(() => {
           <div className="flex gap-2 mt-2">
             <button onClick={() => handleUpdateDescription(description)} className="bg-blue-500 px-4 py-2 rounded">Save</button>
             <button className="bg-gray-500 px-4 py-2 rounded">Cancel</button>
-            <button className="bg-gray-700 px-4 py-2 rounded">Formatting Help</button>
+            {/* <button className="bg-gray-700 px-4 py-2 rounded">Formatting Help</button> */}
             <button className=" bg-red-500 text-white px-4 py-2 rounded" onClick={closeModal}>
         Close
       </button>
@@ -107,31 +112,7 @@ useEffect(() => {
               </button>
             </div>
           ))}
-    <h3 className="text-lg font-semibold mt-4">Activity</h3>
-    {activity.map((activityItem) => (
-  <div key={activityItem.activity_id} className="flex items-center bg-gray-800 p-4 rounded-lg mt-2 shadow-md">
-    {/* {console.log(`${baseUrl}${activityItem.profile_picture_url}`,"profile_picture_url")} */}
-    {/* Profile Picture */}
-    <img 
-      src={`${baseUrl}${activityItem.profile_picture_url}`} 
-      alt={activityItem.performed_by} 
-      className="w-10 h-10 rounded-full object-cover mr-3"
-    />
-    
-    <div>
-      {/* User Name */}
-      <p className="text-white font-semibold">{activityItem.performed_by}</p>
-      
-      {/* Activity Description */}
-      <p className="text-gray-300 text-sm">{activityItem.activity_description}</p>
-      
-      {/* Formatted Date */}
-      <p className="text-gray-500 text-xs">
-        {new Date(activityItem.created_at).toLocaleString()}
-      </p>
-    </div>
-  </div>
-))}
+ <ActivityList activity={activity} />
 
         </div>
 
