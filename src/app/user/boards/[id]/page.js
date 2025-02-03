@@ -16,7 +16,6 @@ const BoardPage = () => {
   const [currentRole, setCurrentRole] = useState(null);
   const [boardMembers, setBoardMembers] = useState([]);
   const [workspaceMembers, setWorkspaceMembers] = useState([]);
-
   const [workspaces, setWorkspaces] = useState([]); // State to hold workspaces
   const [workspaceNote, setWorkspaceNote] = useState("");
   const [board_name, setBoardName] = useState();
