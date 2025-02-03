@@ -19,7 +19,6 @@ const BoardPage = () => {
   const [workspaces, setWorkspaces] = useState([]); // State to hold workspaces
   const [workspaceNote, setWorkspaceNote] = useState("");
   const [board_name, setBoardName] = useState();
-  // console.log(params.id);
   useEffect(() => {
     const getBoardData = async () => {
       const boardData = await fetchBoard(params.id);
