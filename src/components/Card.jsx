@@ -1,18 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import CardModal from "./CardModal";
-import { deleteCard, updateDescription } from "@/utils/api";
+import { deleteCard, fetchCardDetails, updateDescription } from "@/utils/api";
 
 const Card = ({ card, getCards }) => {
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: card.card_id,
   });
- 
-  console.log(card,"card")
+  const getInitials = (name) => name?.split(" ").map(n => n[0]).join("").toUpperCase();
+
+
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+  const [description, setDescription] = useState("");
+  const [details, setDetails] = useState(null);
+
+
+    const fetchCardDetail = async (cardId) => {
+      const cardDetails = await fetchCardDetails(card.card_id)
+
+     setSelectedUsers(cardDetails?.members);
+    // setDescription(cardDetails.card.description);
+    // setDetails(cardDetails?.card);
+     setSelectedLabels(cardDetails?.labels);
+    }
+    useEffect(() => {
+     fetchCardDetail(card.card_id)
+    }, [])
 const handleDeleteCard = async (card_id) => {
   const response = await deleteCard(card_id);
-console.log(response)
+//console.log(response)
   if (response.success) {
     getCards();
   }
@@ -25,7 +43,41 @@ console.log(response)
      
       >
           <div className="flex justify-between items-center">
-          <h3 className="font-semibold text-white">{card.card_title}</h3>
+            <div className="flex space-x-2 flex-col">
+              <div className="flex space-x-2 m-4">
+
+           
+            {selectedLabels?.map((label) => (
+            <span
+              key={label.card_label_id}
+              style={{ backgroundColor: label.label_colour }}
+              className={`px-2 py-1 rounded-full text-xs font-semibold text-white`}
+            >
+              {label.label_title}
+            </span>
+          ))
+
+          }
+              </div>
+          <h2 className="font-semibold text-xl text-white">{card.card_title}</h2>
+<div className="flex space-x-2 m-4">
+
+
+          {selectedUsers && (
+              selectedUsers.map((user) => (
+                <span
+                  key={user.user_id}
+                  className="w-9 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold "
+                >
+                  {getInitials(user.member_name)}
+                </span>
+              ))
+            )
+
+            }
+
+</div>
+          </div>
       <div className="flex space-x-2">
       <div onClick={() => setModalOpen(true)} >
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -47,7 +99,7 @@ console.log(response)
       </div>
 
       {isModalOpen && (
-        <CardModal card={card} closeModal={() => setModalOpen(false)} />
+        <CardModal card={card} closeModal={() =>window.location.reload() && fetchCardDetail(card.card_id) && setModalOpen(false)} />
       )}
     </>
   );

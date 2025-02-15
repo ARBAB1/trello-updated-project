@@ -20,8 +20,8 @@ export const fetchBoard = async (boardId) => {
     method: "GET",
     headers: await getHeaders(),
   });
-  const data = await response.json();
-  return data.success ? data.data : null;
+ 
+  return response
 };
 
 // Fetch Board Members
@@ -121,8 +121,8 @@ export const updateDescription = async (formData) => {
     body: formData,
   });
   const data = await response.json();
-  console.log(data)
-  return response.json();
+
+  return data;
 };
 // Delete a Card
 export const deleteCard = async (cardId) => {
@@ -141,18 +141,22 @@ export const assignMembers = async (cardId, memberIds) => {
   const response = await fetch(`${baseUrl}/cards/assign-card-to-members`, {
     method: "POST",
     headers: await getHeaders(),
-    body: JSON.stringify({ card_id: cardId, member_ids: memberIds }),
+    body: JSON.stringify({ card_id: cardId, member_ids: [memberIds] }),
   });
   return response.json();
 };
 
 // Remove Member from Card
 export const removeMember = async (cardId, userId) => {
-  await fetch(`${baseUrl}/cards/remove-card-members`, {
+  const response = await fetch(`${baseUrl}/cards/remove-card-members`, {
     method: "POST",
     headers: await getHeaders(),
     body: JSON.stringify({ card_id: cardId, user_id_to_remove: userId }),
   });
+  const data = await response.json();
+  console.log(data,"data")
+
+  return data;
 };
 
 /** =========================== CARD LABEL APIs =========================== */
@@ -184,7 +188,8 @@ export const addAttachment = async (formData) => {
     headers: await getHeaders(),
     body: formData,
   });
-  return response.json();
+  const data = response.json() 
+  return data
 };
 
 // Remove Attachment from Card
@@ -239,17 +244,45 @@ export const fetchWorkspaceMembers = async (workspaceId) => {
         const data = await response.json();
         return data.success ? data.data : [];
 }
-// const fetchBoardMembers = async (board_id) => {
+export const updateDueDate = async (formData) => {
+  const token = await localStorage.getItem("access_token");
+  const response = await fetch(`${baseUrl}/cards/update-card`, {
+    method: "POST",
+    headers: {
+      "x-api-key": token1,
+    accesstoken: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+  const data = await response.json();
 
+  return data;
+};
+export const addCover = async (formData) => {
+  const token = await localStorage.getItem("access_token");
+  const response = await fetch(`${baseUrl}/cards/update-card`, {
+    method: "POST",
+    headers: {
+      "x-api-key": token1,
+    accesstoken: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+  const data = await response.json();
 
-//     const response = await fetch(
-//       `${baseUrl}/boards/get-board-members-by-board-id/${board_id}`,
-//       {
-//         method: "GET",
-//         headers: await getHeaders(),
-//       }
-//     );
+  return data;
+};
+export const movelist = async (formData) => {
+  const token = await localStorage.getItem("access_token");
+  const response = await fetch(`${baseUrl}/cards/update-card`, {
+    method: "POST",
+    headers: {
+      "x-api-key": token1,
+    accesstoken: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+  const data = await response.json();
 
-//     const data = await response.json();
-//     return data.success ? data.data : [];
-// };
+  return data;
+};

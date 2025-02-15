@@ -6,14 +6,18 @@ import { useRouter } from "next/navigation"; // Import useRouter for routing
 import { baseUrl, token1 } from "@/constant";
 import { message, Modal } from "antd";
 import { enqueueSnackbar } from "notistack";
+import { fetchBoard } from "@/utils/api";
 // import { useRouter } from "next/navigation";
 const Boards = () => {
   const mountedRef = useRef(true);
   const [showBoardMembersModal, setShowBoardMembersModal] = useState(false);
   const [showBoardModal, setShowBoardModal] = useState(false); // To handle Board Modal visibility
+  const [showBoardEditModal, setShowBoardEditModal] = useState(false);
   const [workspaceNote, setWorkspaceNote] = useState("");
   const [workspaceEmail, setWorkspaceEmail] = useState("");
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null); // Holds the ID of the workspace
+  const [selectedBoardId, setSelectedBoardId] = useState(null); // Holds the ID of the workspace
+
   const [workspaces, setWorkspaces] = useState([]); // State to hold workspaces
   const [boardTitle, setBoardTitle] = useState(""); // State for the board title
   const [background, setBackground] = useState(); // State for selected background
@@ -103,6 +107,8 @@ const Boards = () => {
       console.error("Error assigning admin role:", error);
     }
   };
+
+
   const handleLeaveWorkspace = async (userId) => {
     try {
       const token =localStorage.getItem("access_token");
@@ -239,7 +245,7 @@ const handleDeleteBoard = async (boardId) => {
 
       if (data.success) {
         setWorkspaces(data.data);
-        console.log(data.data)
+        // console.log(data.data)
   
       }
     } catch (error) {
@@ -384,7 +390,48 @@ const handleDeleteBoard = async (boardId) => {
     }
  
   };
+  const updateBoardToWorkspace = async(board_id) => {
+    try {
+      // console.log(workspace_id,'sss')
+      // console.log(workspace_id,boardTitle,boardvisibility,background,boardDescription)
+      const token =await localStorage.getItem("access_token");
+      const formData = new FormData();
+      formData.append("board_name", `${boardTitle}` );
+      formData.append("board_id", board_id);
+      formData.append("visibility", boardvisibility);
+      formData.append('boardBgImage',background)
+      // formData.append('description',boardDescription)
+      const response =await fetch(`${baseUrl}/boards/update-board`,{
+        method: "POST",
+        headers: {
 
+          "x-api-key": `${token1}`,
+          accesstoken: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+    const data = response.json()
+    if(response.ok){
+      // console.log(data)
+      setShowBoardModal(false)
+      fetchWorkspaceBoards()
+      // enqueueSnackbar(data.message, { variant: "success" });
+   
+      setShowBoardModal(false);
+      setSelectedWorkspaceId('')
+      setBoardTitle('')
+      setBoardVisibility("")
+      setBoardDescription("")
+      setBackground(null)
+
+      
+    }
+    } catch (error) {
+      console.log(error,"error")
+    }
+ 
+  };
   const handleCreateBoardMembers = (workspace_id) => {
     setShowBoardMembersModal(true);
     fetchWorkspaceMembers(workspace_id);
@@ -394,6 +441,35 @@ const handleCreateBoard = (workspace_id) => {
   setShowBoardModal(true);
   setSelectedWorkspaceId(workspace_id)
   // addBoardToWorkspace(workspace_id)
+}
+const handleUpdateBoard = (board_id) => {
+  setShowBoardEditModal(true);
+  setSelectedBoardId(board_id)
+  fetchBoardById(board_id)
+}
+const fetchBoardById = async (board_id) => {
+  try {
+    const token = await localStorage.getItem("access_token");
+    const response = await fetch(`${baseUrl}/boards/get-board-by-board-id/${board_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": `${token1}`,
+        accesstoken: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (data.success) {
+      console.log(data.data,"board")
+      setBoardTitle(data.data.board_name)
+      setBoardVisibility(data.data.visibility)
+      setBoardDescription(data.data.description)
+      setBackground(data.data.boardBgImage)
+      // console.log(data.data)
+    }
+  } catch (error) {
+    console.error("Error fetching board:", error);
+  }
 }
   const handleRemoveMember = async (userId) => {
     try {
@@ -462,29 +538,7 @@ console.log(data)
   return (
     <div style={{ backgroundColor: "#1A202C",color:"#fff" }} className="p-6">
       {/* Main content */}
-      <div>
-        <h1 className="text-2xl mb-6">Most popular templates</h1>
-        <div className="grid grid-cols-4 gap-4">
-          {[
-            { title: "Project Management", img: "/hero1.jpg" },
-            { title: "Kanban Template", img: "/hero2.jpg" },
-            { title: "Simple Project Board", img: "/hero3.jpg" },
-            { title: "Remote Team Hub", img: "/hero4.jpg" },
-          ].map((template, index) => (
-            <div
-              key={index}
-              className="bg-gray-700 p-10 rounded-lg"
-              style={{
-                backgroundImage: `url(${template.img})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <p className="text-lg font-bold">{template.title}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+     
 
       {/* Workspaces Section */}
       <div>
@@ -566,13 +620,21 @@ console.log(data)
                     View Board
 
                              </button>
+                             
                              {
                                workspace?.created_by === localStorage.getItem("user_name")?
                                (
-                                         <button onClick={()=>handleDeleteBoard(board?.board_id)} className="cursor-pointer bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 ">
+                                <div>
+                                <button onClick={()=>handleUpdateBoard(board?.board_id)} className="cursor-pointer bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 ">
+                    Edit
+                    </button>
+                    <button onClick={()=>handleDeleteBoard(board?.board_id)} className="cursor-pointer bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 ">
                     Delete
 
                              </button>
+                                </div>
+                                   
+
                                ):(
                                 null
                                )
@@ -657,7 +719,62 @@ console.log(data)
           </div>
         </div>
       )}
-
+ {showBoardEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
+          <div className="bg-gray-800 text-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold mb-4 ">Create Board</h2>
+            <div className="mb-4">
+              <label className="block text-gray-300">Board Title</label>
+              <input
+                type="text"
+                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                value={boardTitle}
+                onChange={(e) => setBoardTitle(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-300">Visibility</label>
+              <select
+                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                value={boardvisibility}
+                onChange={(e) => setBoardVisibility(e.target.value)}
+              >
+                 {/* <option value="">Workspace</option> */}
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+              </select>
+            </div>
+          
+            <label className="block text-gray-300">Background</label>
+            {/* File Upload Input */}
+            <input type="file" accept="image/*" className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2" onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => { setBackground(file); };
+                reader.readAsDataURL(file);
+              }
+            }} />
+            <div className="flex justify-end space-x-2 pt-10">
+              <button
+                onClick={() => setShowBoardEditModal(false)}
+                className="bg-gray-600 text-gray-300 px-4 py-2 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  updateBoardToWorkspace(selectedBoardId)
+                }}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                disabled={!boardTitle}
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Board Members Modal */}
       {showBoardMembersModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
