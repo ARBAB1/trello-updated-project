@@ -106,10 +106,10 @@ const BoardPage = () => {
             accesstoken: `Bearer ${token}`,
           },
           body: JSON.stringify({
-         
-              
-                board_id: params?.id,
-                user_id: board_name,
+
+
+            board_id: params?.id,
+            user_id: board_name,
           }
           )
         }
@@ -118,7 +118,7 @@ const BoardPage = () => {
       // console.log(data)
       if (data.success) {
         // Fetch updated workspaces
-        
+
         fetchBoardMembers(params?.id);
         enqueueSnackbar(data.message, { variant: "success" });
         setLoading(false);
@@ -126,7 +126,7 @@ const BoardPage = () => {
       } else {
         setLoading(false);
         enqueueSnackbar("I love hooks");
-      
+
         // setShowBoardMembersModal(false);
 
         // setError(data.message || "Workspace creation failed");
@@ -166,42 +166,42 @@ const BoardPage = () => {
       console.error("Error removing admin role:", error);
     }
   };
-const fetchBoardMembers = async (board_id) => {
-  const token = await localStorage.getItem("access_token");
-  try {
-    const response = await fetch(
-      `${baseUrl}/boards/get-board-members-by-board-id/${board_id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": `${token1}`,
-          accesstoken: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.success) {
-      setBoardMembers(data.data);
-    
-      const currentUserId = localStorage.getItem("user_id");
-      const currentUser = data.data.find(
-        (member) => member.user_id === parseInt(currentUserId)
+  const fetchBoardMembers = async (board_id) => {
+    const token = await localStorage.getItem("access_token");
+    try {
+      const response = await fetch(
+        `${baseUrl}/boards/get-board-members-by-board-id/${board_id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": `${token1}`,
+            accesstoken: `Bearer ${token}`,
+          },
+        }
       );
-      if (currentUser) {
-        setCurrentRole(
-          currentUser.role === "admin" ? "Admin" : "Member"
+
+      const data = await response.json();
+
+      if (data.success) {
+        setBoardMembers(data.data);
+
+        const currentUserId = localStorage.getItem("user_id");
+        const currentUser = data.data.find(
+          (member) => member.user_id === parseInt(currentUserId)
         );
-      } else {
-        setCurrentRole("Not a Member");
+        if (currentUser) {
+          setCurrentRole(
+            currentUser.role === "admin" ? "Admin" : "Member"
+          );
+        } else {
+          setCurrentRole("Not a Member");
+        }
       }
+    } catch (error) {
+      console.error("Error fetching workspace members:", error);
     }
-  } catch (error) {
-    console.error("Error fetching workspace members:", error);
-  }
-};
+  };
   const fetchWorkspaceMembers = async (workspace_id) => {
     const token = await localStorage.getItem("access_token");
     try {
@@ -221,8 +221,8 @@ const fetchBoardMembers = async (board_id) => {
 
       if (data.success) {
         setWorkspaceMembers(data.data);
-       
-      
+
+
       }
     } catch (error) {
       console.error("Error fetching workspace members:", error);
@@ -257,7 +257,7 @@ const fetchBoardMembers = async (board_id) => {
       const data = await response.json();
 
       if (data.success) {
-    fetchBoardMembers(params?.id);
+        fetchBoardMembers(params?.id);
       } else {
         console.error("Failed to remove member:", data.message);
       }
@@ -309,7 +309,7 @@ const fetchBoardMembers = async (board_id) => {
         <h1 className="text-white text-3xl font-bold">{board?.board_name}</h1>
         <button
           className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
-          onClick={() => handleCreateBoardMembers(params.id,board?.workspace_id)}
+          onClick={() => handleCreateBoardMembers(params.id, board?.workspace_id)}
         >
           Add Members
         </button>
@@ -326,28 +326,28 @@ const fetchBoardMembers = async (board_id) => {
               <div className="flex-1">
                 <div className="mb-4">
                   <h3 className="text-lg font-bold mb-4">
-                
+
                   </h3>
                   <label className="block text-gray-300">
                     Users to invite
                   </label>
                   <select
-  id="small"
-  className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-  value={board_name}
-  onChange={(e) => setBoardName(e.target.value)}
->
-  <option value="">Choose Members</option>
-  {workspaceMembers.length > 0 ? (
-    workspaceMembers.map((member) => (
-      <option key={member.user_id} value={member.user_id}>
-        {member.name || member.email}
-      </option>
-    ))
-  ) : (
-    <option disabled>No members in this workspace.</option> // ✅ Correct way
-  )}
-</select>
+                    id="small"
+                    className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    value={board_name}
+                    onChange={(e) => setBoardName(e.target.value)}
+                  >
+                    <option value="">Choose Members</option>
+                    {workspaceMembers.length > 0 ? (
+                      workspaceMembers.map((member) => (
+                        <option key={member.user_id} value={member.user_id}>
+                          {member.name || member.email}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No members in this workspace.</option> // ✅ Correct way
+                    )}
+                  </select>
 
                 </div>
 
@@ -364,7 +364,7 @@ const fetchBoardMembers = async (board_id) => {
                       handleOkBoardMembers();
                     }}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                    // disabled={!workspaceEmail || !workspaceNote}
+                  // disabled={!workspaceEmail || !workspaceNote}
                   >
                     Invite
                   </button>
@@ -386,12 +386,12 @@ const fetchBoardMembers = async (board_id) => {
                         key={index}
                         className="flex justify-between items-center bg-gray-700 p-2 rounded-lg"
                       >
-                        <span>{member.user_name }</span>
+                        <span>{member.user_name}</span>
                         <span className="text-sm text-gray-400">
                           {member.role}
                         </span>
                         {currentRole === "Admin" &&
-                        member.user_id ===
+                          member.user_id ===
                           parseInt(localStorage.getItem("user_id")) ? (
                           <button
                             onClick={() => handleLeaveMember(member.user_id)}
@@ -401,21 +401,21 @@ const fetchBoardMembers = async (board_id) => {
                           </button>
                         ) : currentRole === "Admin" ? (
                           <>
-                         
-                          <button
-                            onClick={() => handleRemoveMember(member.user_id)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                         
-                            Remove
-                          </button>
-                       
-                         </>
+
+                            <button
+                              onClick={() => handleRemoveMember(member.user_id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+
+                              Remove
+                            </button>
+
+                          </>
                         ) : currentRole === "Not a Member" ? null : null}
                         {currentRole === "Admin" &&
                           member.role === "admin" &&
                           member.user_id !=
-                            parseInt(localStorage.getItem("user_id")) && (
+                          parseInt(localStorage.getItem("user_id")) && (
                             <button
                               onClick={() =>
                                 handleRemoveAdminRole(member.user_id)
@@ -439,7 +439,7 @@ const fetchBoardMembers = async (board_id) => {
                         {currentRole === "Member" &&
                           member.role === "member" &&
                           member.user_id ===
-                            parseInt(localStorage.getItem("user_id")) && (
+                          parseInt(localStorage.getItem("user_id")) && (
                             <button
                               onClick={() =>
                                 handleLeaveWorkspace(member.user_id)

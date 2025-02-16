@@ -1,63 +1,48 @@
+"use client"
 import React, { useEffect, useState } from "react";
 import { DndContext, closestCorners } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import Column from "./Column";
 import { baseUrl, token1 } from "@/constant";
 import { fetchLists } from "@/utils/api";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 // import { createList } from "@/utils/api"; // Import API to create a list
 
 const KanbanBoard = ({ lists, boardId }) => {
-    const [columns, setColumns] = useState(lists || []);
+  const [columns, setColumns] = useState(lists || []);
   const [newListName, setNewListName] = useState("");
   const [isAddingList, setIsAddingList] = useState(false);
   useEffect(() => {
     const getBoardData = async () => {
-    const listsData = await fetchLists(boardId);
-        console.log(listsData,"listsData")
-         setColumns(listsData);
+      const listsData = await fetchLists(boardId);
+      console.log(listsData, "listsData")
+      setColumns(listsData);
     }
 
     getBoardData();
   }, [boardId]);
   const getBoardData = async () => {
     const listsData = await fetchLists(boardId);
-        console.log(listsData,"listsData")
-         setColumns(listsData);
-    }
-  const onDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeColumnIndex = columns.findIndex((col) =>
-      col.tasks.some((task) => task.id === active.id)
-    );
-
-    const overColumnIndex = columns.findIndex((col) => col.id === over.id);
-
-    if (activeColumnIndex !== overColumnIndex) {
-      const activeTask = columns[activeColumnIndex].tasks.find(
-        (task) => task.id === active.id
-      );
-
-      setColumns((prev) => {
-        const updatedColumns = [...prev];
-        updatedColumns[activeColumnIndex].tasks = updatedColumns[
-          activeColumnIndex
-        ].tasks.filter((task) => task.id !== active.id);
-        updatedColumns[overColumnIndex].tasks.push(activeTask);
-        return updatedColumns;
-      });
-    }
+    console.log(listsData, "listsData")
+    setColumns(listsData);
+  }
+  const getHeaders = async () => {
+    const token = await localStorage.getItem("access_token");
+    return {
+      "Content-Type": "application/json",
+      "x-api-key": token1,
+      accesstoken: `Bearer ${token}`,
+    };
   };
-const getHeaders = async () => {
-  const token = await localStorage.getItem("access_token");
-  return {
-    "Content-Type": "application/json",
-    "x-api-key": token1,
-    accesstoken: `Bearer ${token}`,
-  };
-};
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
 
+    const reorderedColumns = reorder(columns, result.source.index, result.destination.index);
+    setColumns(reorderedColumns);
+
+    // Optional: Call function to update board data after reordering
+    if (getBoardData) getBoardData(reorderedColumns);
+  };
   const handleCreateList = async () => {
     if (!newListName.trim()) return;
     console.log(boardId, newListName, "#ff6347")
@@ -80,29 +65,34 @@ const getHeaders = async () => {
       setIsAddingList(false);
     }
   };
+  const initialColumns = [
+    { list_id: "1", title: "To Do" },
+    { list_id: "2", title: "In Progress" },
+    { list_id: "3", title: "Done" },
+  ];
 
   return (
-
     <DndContext collisionDetection={closestCorners} onDragEnd={onDragEnd}>
       <div className="flex gap-4 overflow-x-auto p-4">
         <SortableContext items={columns.map((col) => col.list_id || col.list_nam)}>
           {/* {console.log(columns.length,"columns")} */}
-          {columns.length > 0 && 
- columns.map((column, index) => (
-  <Column key={column.list_id || `column-${index}`} column={column} getBoardData={getBoardData}/>
-))}
-          
-           
-         
-            <div className="bg-gray-900 p-4 rounded w-80 h-20 text-center">
-              <div
-                onClick={() => setIsAddingList(true)}
-                className="text-white px-4 py-2 rounded-lg border border-gray-600 cursor-pointer"
-              >
-                + Add a List
-              </div>
+          {/* {columns.length > 0 &&
+            columns.map((column, index) => (
+              <Column key={column.list_id || `column-${index}`} column={column} getBoardData={getBoardData} />
+            ))} */}
+
+
+          <DragAndDropBoard initialColumns={initialColumns} getBoardData={(data) => console.log("Updated Board:", data)} />
+
+          <div className="bg-gray-900 p-4 rounded w-80 h-20 text-center">
+            <div
+              onClick={() => setIsAddingList(true)}
+              className="text-white px-4 py-2 rounded-lg border border-gray-600 cursor-pointer"
+            >
+              + Add a List
             </div>
-        
+          </div>
+
         </SortableContext>
 
         {/* Add List Input Field */}
@@ -135,11 +125,73 @@ const getHeaders = async () => {
     </DndContext>
   );
 
-     
+
 };
 
 export default KanbanBoard;
 
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+};
+
+const DragAndDropBoard = ({ initialColumns, getBoardData }) => {
+  const [columns, setColumns] = useState(initialColumns || []);
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const reorderedColumns = reorder(columns, result.source.index, result.destination.index);
+    setColumns(reorderedColumns);
+
+    // Optional: Call function to update board data after reordering
+    if (getBoardData) getBoardData(reorderedColumns);
+  };
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="board" direction="horizontal">
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            style={{
+              display: "flex",
+              gap: "16px",
+              padding: "16px",
+              background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
+            }}
+          >
+            {columns.length > 0 &&
+              columns.map((column, index) => (
+                <Draggable key={column.list_id || `column-${index}`} draggableId={column.list_id || `column-${index}`} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={{
+                        padding: "16px",
+                        background: snapshot.isDragging ? "lightgreen" : "white",
+                        borderRadius: "8px",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                        ...provided.draggableProps.style,
+                      }}
+                    >
+                      <Column column={column} getBoardData={getBoardData} />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+};
 
 
 // ‹div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden px-[40px]">

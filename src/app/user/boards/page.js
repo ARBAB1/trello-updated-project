@@ -29,13 +29,13 @@ const Boards = () => {
   // const router = 
   const [currentRole, setCurrentRole] = useState(null); // To store the current user's role
   const router = useRouter(); // Initialize the router
-  const [showWorkspaceModal,setShowWorkspaceModal] = useState(false);
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceType, setWorkspaceType] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [workspaceTypes, setWorkspaceTypes] = useState([]);
   const [boardDescription, setBoardDescription] = useState("");
-  const [boards,setBoards]=useState([])
+  const [boards, setBoards] = useState([])
 
 
   //Workspace Settings
@@ -43,7 +43,7 @@ const Boards = () => {
     setShowWorkspaceModal(false);
   };
   const handleOkWorkspace = async () => {
-   
+
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`${baseUrl}/workspace/create-workspace`, {
@@ -60,7 +60,7 @@ const Boards = () => {
         }),
       });
       const data = await response.json();
-      console.log('data',data)
+      console.log('data', data)
       if (data.success) {
         enqueueSnackbar(data.message, { variant: "success" });
         setShowWorkspaceModal(false);
@@ -71,9 +71,9 @@ const Boards = () => {
       } else {
         enqueueSnackbar(data.message, { variant: "error" });
       }
-  
-        
-    
+
+
+
     } catch (error) {
       console.error("Error removing admin role:", error);
     }
@@ -81,7 +81,7 @@ const Boards = () => {
 
   const handleAssignAdminRole = async (userId) => {
     try {
-      const token =localStorage.getItem("access_token");
+      const token = localStorage.getItem("access_token");
       const response = await fetch(`${baseUrl}/workspace/assign-workspace-admin`, {
         method: "POST",
         headers: {
@@ -111,7 +111,7 @@ const Boards = () => {
 
   const handleLeaveWorkspace = async (userId) => {
     try {
-      const token =localStorage.getItem("access_token");
+      const token = localStorage.getItem("access_token");
       const response = await fetch(`${baseUrl}/workspace/leave-workspace`, {
         method: "POST",
         headers: {
@@ -121,22 +121,22 @@ const Boards = () => {
         },
         body: JSON.stringify({
           workspace_id: selectedWorkspaceId,
-        
+
         }),
       });
       const data = await response.json();
       if (data.success) {
         fetchWorkspaceMembers(selectedWorkspaceId);
-      
+
       }
     } catch (error) {
       console.error("Error assigning admin role:", error);
     }
   };
   const handleOkBoardMembers = async () => {
-    const token =await localStorage.getItem("access_token");
+    const token = await localStorage.getItem("access_token");
     try {
-setLoading(true);
+      setLoading(true);
       const response = await fetch(`${baseUrl}/workspace/send-email-invitation`, {
         method: "POST",
         headers: {
@@ -145,35 +145,35 @@ setLoading(true);
           'accesstoken': `Bearer ${token}`,
         },
         body: JSON.stringify({
-         invitees: [
-        {
-            email: workspaceEmail,
-            note: workspaceNote
-        },
-      ],
-      workspace_id: selectedWorkspaceId
+          invitees: [
+            {
+              email: workspaceEmail,
+              note: workspaceNote
+            },
+          ],
+          workspace_id: selectedWorkspaceId
         }),
       });
 
       const data = await response.json();
-// console.log(data)
+      // console.log(data)
       if (data.success) {
         // Fetch updated workspaces
         enqueueSnackbar(data.message, { variant: "success" });
-     setLoading(false);
+        setLoading(false);
         // Close modal and reset fields
         setWorkspaceEmail("");
         setWorkspaceNote("");
-       setSelectedWorkspaceId(null);
+        setSelectedWorkspaceId(null);
         setShowBoardMembersModal(false);
       } else {
         setLoading(false);
         enqueueSnackbar('I love hooks')
         setWorkspaceEmail("");
         setWorkspaceNote("");
-       setSelectedWorkspaceId(null);
+        setSelectedWorkspaceId(null);
         setShowBoardMembersModal(false);
-        
+
         // setError(data.message || "Workspace creation failed");
       }
     } catch (error) {
@@ -181,54 +181,54 @@ setLoading(true);
       setError("An error occurred. Please try again later.");
     }
   };
-const handleDeleteWorkspace = async (workspaceId) => {
-  try {
-    const token = await localStorage.getItem("access_token");
-    const response = await fetch(`${baseUrl}/workspace/delete-workspace`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": token1,
-        accesstoken: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        workspace_id: workspaceId,
-      }),
-    });
-    const data = await response.json();
-    console.log(data,"deleted")
-    if (data.success) {
-      enqueueSnackbar(data.message, { variant: "warning" });
-      fetchWorkspaces();
+  const handleDeleteWorkspace = async (workspaceId) => {
+    try {
+      const token = await localStorage.getItem("access_token");
+      const response = await fetch(`${baseUrl}/workspace/delete-workspace`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": token1,
+          accesstoken: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          workspace_id: workspaceId,
+        }),
+      });
+      const data = await response.json();
+      console.log(data, "deleted")
+      if (data.success) {
+        enqueueSnackbar(data.message, { variant: "warning" });
+        fetchWorkspaces();
+      }
+    } catch (error) {
+      console.error("Error deleting workspace:", error);
     }
-  } catch (error) {
-    console.error("Error deleting workspace:", error);
   }
-}
-const handleDeleteBoard = async (boardId) => {
-  try {
-    const token = await localStorage.getItem("access_token");
-    const response = await fetch(`${baseUrl}/boards/delete-board`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": token1,
-        accesstoken: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        board_id: boardId,
-      }),
-    });
-    const data = await response.json();
-    console.log(data,"deleted")
-    if (data.success) {
-      fetchWorkspaceBoards()
-      enqueueSnackbar(data.message, { variant: "error" });
+  const handleDeleteBoard = async (boardId) => {
+    try {
+      const token = await localStorage.getItem("access_token");
+      const response = await fetch(`${baseUrl}/boards/delete-board`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": token1,
+          accesstoken: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          board_id: boardId,
+        }),
+      });
+      const data = await response.json();
+      console.log(data, "deleted")
+      if (data.success) {
+        fetchWorkspaceBoards()
+        enqueueSnackbar(data.message, { variant: "error" });
+      }
+    } catch (error) {
+      console.error("Error deleting workspace:", error);
     }
-  } catch (error) {
-    console.error("Error deleting workspace:", error);
   }
-}
   const fetchWorkspaces = async () => {
     try {
       const token = await localStorage.getItem("access_token");
@@ -246,7 +246,7 @@ const handleDeleteBoard = async (boardId) => {
       if (data.success) {
         setWorkspaces(data.data);
         // console.log(data.data)
-  
+
       }
     } catch (error) {
       console.error("Error fetching workspaces:", error);
@@ -254,7 +254,7 @@ const handleDeleteBoard = async (boardId) => {
   };
   const fetchWorkspaceBoards = async () => {
     try {
-    
+
       const token = await localStorage.getItem("access_token");
       const response = await fetch(`${baseUrl}/boards/get-all-boards`, {
         method: "GET",
@@ -291,7 +291,7 @@ const handleDeleteBoard = async (boardId) => {
         }),
       });
       const data = await response.json();
-      console.log('data',data)
+      console.log('data', data)
       if (data.success) {
         fetchWorkspaceMembers(selectedWorkspaceId);
         setBoardMembers((prevMembers) =>
@@ -299,7 +299,7 @@ const handleDeleteBoard = async (boardId) => {
             member.user_id === userId ? { ...member, role: "Member" } : member
           )
         );
-      }else {
+      } else {
         alert(data.message)
       }
     } catch (error) {
@@ -337,7 +337,7 @@ const handleDeleteBoard = async (boardId) => {
   };
   useEffect(() => {
     fetchWorkspaces();
-     fetchWorkspaceBoards();
+    fetchWorkspaceBoards();
     return () => {
       mountedRef.current = false; // Cleanup on component unmount
     };
@@ -348,18 +348,18 @@ const handleDeleteBoard = async (boardId) => {
   const handleCancelBoard = () => {
     setShowBoardModal(false);
   };
-  const addBoardToWorkspace = async(workspace_id) => {
+  const addBoardToWorkspace = async (workspace_id) => {
     try {
       // console.log(workspace_id,'sss')
       // console.log(workspace_id,boardTitle,boardvisibility,background,boardDescription)
-      const token =await localStorage.getItem("access_token");
+      const token = await localStorage.getItem("access_token");
       const formData = new FormData();
-      formData.append("board_name", `${boardTitle}` );
+      formData.append("board_name", `${boardTitle}`);
       formData.append("workspace_id", workspace_id);
       formData.append("visibility", boardvisibility);
-      formData.append('boardBgImage',background)
-      formData.append('description',boardDescription)
-      const response =await fetch(`${baseUrl}/boards/create-board`,{
+      formData.append('boardBgImage', background)
+      formData.append('description', boardDescription)
+      const response = await fetch(`${baseUrl}/boards/create-board`, {
         method: "POST",
         headers: {
 
@@ -368,40 +368,40 @@ const handleDeleteBoard = async (boardId) => {
         },
         body: formData,
       }
-    );
-    const data = response.json()
-    if(response.ok){
-      // console.log(data)
-      setShowBoardModal(false)
-      fetchWorkspaceBoards()
-      // enqueueSnackbar(data.message, { variant: "success" });
-   
-      setShowBoardModal(false);
-      setSelectedWorkspaceId('')
-      setBoardTitle('')
-      setBoardVisibility("")
-      setBoardDescription("")
-      setBackground(null)
+      );
+      const data = response.json()
+      if (response.ok) {
+        // console.log(data)
+        setShowBoardModal(false)
+        fetchWorkspaceBoards()
+        // enqueueSnackbar(data.message, { variant: "success" });
 
-      
-    }
+        setShowBoardModal(false);
+        setSelectedWorkspaceId('')
+        setBoardTitle('')
+        setBoardVisibility("")
+        setBoardDescription("")
+        setBackground(null)
+
+
+      }
     } catch (error) {
-      console.log(error,"error")
+      console.log(error, "error")
     }
- 
+
   };
-  const updateBoardToWorkspace = async(board_id) => {
+  const updateBoardToWorkspace = async (board_id) => {
     try {
       // console.log(workspace_id,'sss')
       // console.log(workspace_id,boardTitle,boardvisibility,background,boardDescription)
-      const token =await localStorage.getItem("access_token");
+      const token = await localStorage.getItem("access_token");
       const formData = new FormData();
-      formData.append("board_name", `${boardTitle}` );
+      formData.append("board_name", `${boardTitle}`);
       formData.append("board_id", board_id);
       formData.append("visibility", boardvisibility);
-      formData.append('boardBgImage',background)
+      formData.append('boardBgImage', background)
       // formData.append('description',boardDescription)
-      const response =await fetch(`${baseUrl}/boards/update-board`,{
+      const response = await fetch(`${baseUrl}/boards/update-board`, {
         method: "POST",
         headers: {
 
@@ -410,67 +410,67 @@ const handleDeleteBoard = async (boardId) => {
         },
         body: formData,
       }
-    );
-    const data = response.json()
-    if(response.ok){
-      // console.log(data)
-      setShowBoardModal(false)
-      fetchWorkspaceBoards()
-      // enqueueSnackbar(data.message, { variant: "success" });
-   
-      setShowBoardModal(false);
-      setSelectedWorkspaceId('')
-      setBoardTitle('')
-      setBoardVisibility("")
-      setBoardDescription("")
-      setBackground(null)
+      );
+      const data = response.json()
+      if (response.ok) {
+        // console.log(data)
+        setShowBoardModal(false)
+        fetchWorkspaceBoards()
+        // enqueueSnackbar(data.message, { variant: "success" });
 
-      
-    }
+        setShowBoardModal(false);
+        setSelectedWorkspaceId('')
+        setBoardTitle('')
+        setBoardVisibility("")
+        setBoardDescription("")
+        setBackground(null)
+
+
+      }
     } catch (error) {
-      console.log(error,"error")
+      console.log(error, "error")
     }
- 
+
   };
   const handleCreateBoardMembers = (workspace_id) => {
     setShowBoardMembersModal(true);
     fetchWorkspaceMembers(workspace_id);
     setSelectedWorkspaceId(workspace_id);
   };
-const handleCreateBoard = (workspace_id) => {
-  setShowBoardModal(true);
-  setSelectedWorkspaceId(workspace_id)
-  // addBoardToWorkspace(workspace_id)
-}
-const handleUpdateBoard = (board_id) => {
-  setShowBoardEditModal(true);
-  setSelectedBoardId(board_id)
-  fetchBoardById(board_id)
-}
-const fetchBoardById = async (board_id) => {
-  try {
-    const token = await localStorage.getItem("access_token");
-    const response = await fetch(`${baseUrl}/boards/get-board-by-board-id/${board_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": `${token1}`,
-        accesstoken: `Bearer ${token}`,
-      },
-    });
-    const data = await response.json();
-    if (data.success) {
-      console.log(data.data,"board")
-      setBoardTitle(data.data.board_name)
-      setBoardVisibility(data.data.visibility)
-      setBoardDescription(data.data.description)
-      setBackground(data.data.boardBgImage)
-      // console.log(data.data)
-    }
-  } catch (error) {
-    console.error("Error fetching board:", error);
+  const handleCreateBoard = (workspace_id) => {
+    setShowBoardModal(true);
+    setSelectedWorkspaceId(workspace_id)
+    // addBoardToWorkspace(workspace_id)
   }
-}
+  const handleUpdateBoard = (board_id) => {
+    setShowBoardEditModal(true);
+    setSelectedBoardId(board_id)
+    fetchBoardById(board_id)
+  }
+  const fetchBoardById = async (board_id) => {
+    try {
+      const token = await localStorage.getItem("access_token");
+      const response = await fetch(`${baseUrl}/boards/get-board-by-board-id/${board_id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": `${token1}`,
+          accesstoken: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log(data.data, "board")
+        setBoardTitle(data.data.board_name)
+        setBoardVisibility(data.data.visibility)
+        setBoardDescription(data.data.description)
+        setBackground(data.data.boardBgImage)
+        // console.log(data.data)
+      }
+    } catch (error) {
+      console.error("Error fetching board:", error);
+    }
+  }
   const handleRemoveMember = async (userId) => {
     try {
       const token = await localStorage.getItem("access_token");
@@ -523,34 +523,34 @@ const fetchBoardById = async (board_id) => {
       );
 
       const data = await response.json();
-console.log(data)
+      console.log(data)
       if (data.success) {
         setBoardMembers((prevMembers) =>
           prevMembers.filter((member) => member.user_id !== userId)
         );
       } else {
-       alert(data.message);
+        alert(data.message);
       }
     } catch (error) {
       console.error("Error removing member:", error);
     }
   };
   return (
-    <div style={{ backgroundColor: "#1A202C",color:"#fff" }} className="p-6">
+    <div style={{ backgroundColor: "#1A202C", color: "#fff" }} className="p-6">
       {/* Main content */}
-     
+
 
       {/* Workspaces Section */}
       <div>
         <div className="flex justify-between items-center m-6">
 
-        <h1 className="text-2xl mb-6">Your Workspaces</h1>
-        <button
-          className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
-          onClick={() => setShowWorkspaceModal(true)}
-        >
-          Create Workspace
-        </button>
+          <h1 className="text-2xl mb-6">Your Workspaces</h1>
+          <button
+            className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
+            onClick={() => setShowWorkspaceModal(true)}
+          >
+            Create Workspace
+          </button>
         </div>
 
         {workspaces.length > 0 ? (
@@ -575,16 +575,16 @@ console.log(data)
                     {
                       workspace?.created_by === localStorage.getItem("user_name") ? (
                         <button
-                        className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700"
-                        onClick={() => handleDeleteWorkspace(workspace.workspace_id)}
-                      >
-                      Delete Workspace
-                      </button>
+                          className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700"
+                          onClick={() => handleDeleteWorkspace(workspace.workspace_id)}
+                        >
+                          Delete Workspace
+                        </button>
                       ) : (
                         <span className=" p-2 rounded-lg text-red-500 font-bold">Member</span>
                       )
                     }
-               
+
                     <button
                       className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
                       onClick={() => handleCreateBoard(workspace.workspace_id)}
@@ -615,31 +615,31 @@ console.log(data)
                           }}
                         >
                           <p>{board.board_name}</p>
-                          <button onClick={()=>     
-        router.push(`boards/${board.board_id}`)} className="cursor-pointer bg-green-900 px-4 py-2 rounded-lg hover:bg-green-600 ">
-                    View Board
+                          <button onClick={() =>
+                            router.push(`boards/${board.board_id}`)} className="cursor-pointer bg-green-900 px-4 py-2 rounded-lg hover:bg-green-600 ">
+                            View Board
 
-                             </button>
-                             
-                             {
-                               workspace?.created_by === localStorage.getItem("user_name")?
-                               (
+                          </button>
+
+                          {
+                            workspace?.created_by === localStorage.getItem("user_name") ?
+                              (
                                 <div>
-                                <button onClick={()=>handleUpdateBoard(board?.board_id)} className="cursor-pointer bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 ">
-                    Edit
-                    </button>
-                    <button onClick={()=>handleDeleteBoard(board?.board_id)} className="cursor-pointer bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 ">
-                    Delete
+                                  <button onClick={() => handleUpdateBoard(board?.board_id)} className="cursor-pointer bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 ">
+                                    Edit
+                                  </button>
+                                  <button onClick={() => handleDeleteBoard(board?.board_id)} className="cursor-pointer bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 ">
+                                    Delete
 
-                             </button>
+                                  </button>
                                 </div>
-                                   
 
-                               ):(
+
+                              ) : (
                                 null
-                               )
-                             }
-                 
+                              )
+                          }
+
                         </div>
                       ))}
                     </div>
@@ -676,7 +676,7 @@ console.log(data)
                 value={boardvisibility}
                 onChange={(e) => setBoardVisibility(e.target.value)}
               >
-                 {/* <option value="">Workspace</option> */}
+                {/* <option value="">Workspace</option> */}
                 <option value="Public">Public</option>
                 <option value="Private">Private</option>
               </select>
@@ -708,7 +708,7 @@ console.log(data)
               </button>
               <button
                 onClick={() => {
-                addBoardToWorkspace(selectedWorkspaceId)
+                  addBoardToWorkspace(selectedWorkspaceId)
                 }}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg"
                 disabled={!boardTitle}
@@ -719,7 +719,7 @@ console.log(data)
           </div>
         </div>
       )}
- {showBoardEditModal && (
+      {showBoardEditModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
           <div className="bg-gray-800 text-white rounded-lg p-6 w-96">
             <h2 className="text-xl font-bold mb-4 ">Create Board</h2>
@@ -739,12 +739,12 @@ console.log(data)
                 value={boardvisibility}
                 onChange={(e) => setBoardVisibility(e.target.value)}
               >
-                 {/* <option value="">Workspace</option> */}
+                {/* <option value="">Workspace</option> */}
                 <option value="Public">Public</option>
                 <option value="Private">Private</option>
               </select>
             </div>
-          
+
             <label className="block text-gray-300">Background</label>
             {/* File Upload Input */}
             <input type="file" accept="image/*" className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2" onChange={(e) => {
@@ -784,7 +784,7 @@ console.log(data)
               {/* Invitation Form */}
               <div className="flex-1">
                 <div className="mb-4">
-                <h3 className="text-lg font-bold mb-4">Invite New Member</h3>
+                  <h3 className="text-lg font-bold mb-4">Invite New Member</h3>
                   <label className="block text-gray-300">Invitation Email</label>
                   <input
                     type="email"
@@ -829,7 +829,7 @@ console.log(data)
                   <p className="text-gray-300 font-semibold">Your Role: {currentRole}</p>
                 </div>
                 <ul className="space-y-2">
-              
+
                   {boardMembers.length > 0 ? (
                     boardMembers.map((member, index) => (
                       <li
@@ -853,30 +853,30 @@ console.log(data)
                             Remove
                           </button>
                         ) : currentRole === "Not a Member" ? null : null}
-                          {currentRole === "Admin" && member.role === "workspace_admin" && member.user_id != parseInt(localStorage.getItem("user_id")) && (
-                    <button
-                      onClick={() => handleRemoveAdminRole(member.user_id)}
-                       className="text-red-300 hover:text-red-500"
-                    >
-                      Remove Admin
-                    </button>
-                  )}
-                    {currentRole === "Admin" && member.role === "member" && (
-                    <button
-                      onClick={() => handleAssignAdminRole(member.user_id)}
-                className="text-green-300 hover:text-green-500"
-                    >
-                      Make Admin
-                    </button>
-                  )}
-                   {currentRole === "Member" && member.role === "member" && member.user_id === parseInt(localStorage.getItem("user_id")) && (
-                    <button
-                      onClick={() => handleLeaveWorkspace(member.user_id)}
-                className="text-green-300 hover:text-green-500"
-                    >
-                      Leave Workspace
-                    </button>
-                  )}
+                        {currentRole === "Admin" && member.role === "workspace_admin" && member.user_id != parseInt(localStorage.getItem("user_id")) && (
+                          <button
+                            onClick={() => handleRemoveAdminRole(member.user_id)}
+                            className="text-red-300 hover:text-red-500"
+                          >
+                            Remove Admin
+                          </button>
+                        )}
+                        {currentRole === "Admin" && member.role === "member" && (
+                          <button
+                            onClick={() => handleAssignAdminRole(member.user_id)}
+                            className="text-green-300 hover:text-green-500"
+                          >
+                            Make Admin
+                          </button>
+                        )}
+                        {currentRole === "Member" && member.role === "member" && member.user_id === parseInt(localStorage.getItem("user_id")) && (
+                          <button
+                            onClick={() => handleLeaveWorkspace(member.user_id)}
+                            className="text-green-300 hover:text-green-500"
+                          >
+                            Leave Workspace
+                          </button>
+                        )}
                       </li>
                     ))
                   ) : (
@@ -888,58 +888,58 @@ console.log(data)
           </div>
         </div>
       )}
-     {showWorkspaceModal && (
-     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
-     <div className="bg-gray-800 text-white rounded-lg p-6 w-96">
-       <h2 className="text-xl font-bold mb-4">Create Workspace</h2>
-       <div className="mb-4">
-         <label className="block text-gray-300">Workspace Name</label>
-         <input
-           type="text"
-           className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
-           value={workspaceName}
-           onChange={(e) => setWorkspaceName(e.target.value)}
-         />
-       </div>
-       <div className="mb-4">
-         <label className="block text-gray-300">Visibility</label>
-         <select
-           className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
-           value={visibility}
-           onChange={(e) => setVisibility(e.target.value)}
-         >
-           <option value="public">Public</option>
-           <option value="private">Private</option>
-         </select>
-       </div>
-     <div className="mb-4">
-         <label className="block text-gray-300">Description</label>
-         <textarea
-           className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
-           value={workspaceDescription}
-           onChange={(e) => setWorkspaceDescription(e.target.value)}
-         />
-     </div>
-       <div className="flex justify-end space-x-2 ">
-       <button
-           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
-           onClick={handleCancelWorkspace}
-         >
-           Cancel
-         </button>
-         <button
-           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
-           onClick={handleOkWorkspace}
-         >
-           Create
-         </button>
-       </div>
-     </div>
-   </div>
-   
+      {showWorkspaceModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
+          <div className="bg-gray-800 text-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold mb-4">Create Workspace</h2>
+            <div className="mb-4">
+              <label className="block text-gray-300">Workspace Name</label>
+              <input
+                type="text"
+                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                value={workspaceName}
+                onChange={(e) => setWorkspaceName(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-300">Visibility</label>
+              <select
+                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-300">Description</label>
+              <textarea
+                className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                value={workspaceDescription}
+                onChange={(e) => setWorkspaceDescription(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end space-x-2 ">
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+                onClick={handleCancelWorkspace}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+                onClick={handleOkWorkspace}
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+
       )}
 
-     
+
     </div>
   );
 };
