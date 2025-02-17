@@ -1,4 +1,3 @@
-"use client"
 import React, { useEffect, useState } from "react";
 import { DndContext, closestCorners } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
@@ -6,7 +5,6 @@ import Column from "./Column";
 import { baseUrl, token1 } from "@/constant";
 import { fetchLists } from "@/utils/api";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-// import { createList } from "@/utils/api"; // Import API to create a list
 
 const KanbanBoard = ({ lists, boardId }) => {
   const [columns, setColumns] = useState(lists || []);
@@ -75,15 +73,7 @@ const KanbanBoard = ({ lists, boardId }) => {
     <DndContext collisionDetection={closestCorners} onDragEnd={onDragEnd}>
       <div className="flex gap-4 overflow-x-auto p-4">
         <SortableContext items={columns.map((col) => col.list_id || col.list_nam)}>
-          {/* {console.log(columns.length,"columns")} */}
-          {/* {columns.length > 0 &&
-            columns.map((column, index) => (
-              <Column key={column.list_id || `column-${index}`} column={column} getBoardData={getBoardData} />
-            ))} */}
-
-
           <DragAndDropBoard initialColumns={initialColumns} getBoardData={(data) => console.log("Updated Board:", data)} />
-
           <div className="bg-gray-900 p-4 rounded w-80 h-20 text-center">
             <div
               onClick={() => setIsAddingList(true)}
@@ -92,7 +82,6 @@ const KanbanBoard = ({ lists, boardId }) => {
               + Add a List
             </div>
           </div>
-
         </SortableContext>
 
         {/* Add List Input Field */}
@@ -152,7 +141,7 @@ const DragAndDropBoard = ({ initialColumns, getBoardData }) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="board" direction="horizontal">
+      <Droppable ignoreContainerClipping={false} droppableId="board" isDropDisabled={false} isCombineEnabled={false} direction="horizontal">
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
